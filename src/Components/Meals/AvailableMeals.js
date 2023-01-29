@@ -1,36 +1,11 @@
 import Card from "../UI/Card";
 import MealItem from "./MealItem/MealItem";
 import classes from "./AvailableMeals.module.css";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
-
+import { useContext } from "react";
+import MealsContext from "../../store/meals-context";
 const AvailableMeals = () => {
-  const mealsList = DUMMY_MEALS.map((meal) => (
+  const mealsCtx = useContext(MealsContext);
+  const mealsList = mealsCtx.meals.map((meal) => (
     <MealItem
       id={meal.id}
       key={meal.id}
@@ -39,11 +14,26 @@ const AvailableMeals = () => {
       price={meal.price}
     />
   ));
+  if (mealsCtx.loading) {
+    return (
+      <section className={classes.MealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (mealsCtx.error) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{mealsCtx.error}</p>
+      </section>
+    );
+  }
 
   return (
     <section className={classes.meals}>
       <Card>
-        <ul>{mealsList}</ul>
+        <ul>{!mealsCtx.loading && !mealsCtx.error && mealsList}</ul>
       </Card>
     </section>
   );
